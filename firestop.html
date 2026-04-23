@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#D85A30" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="FireStop AI" />
+<title>FireStop AI — AS/NCC Compliance Reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --fire: #D85A30;
+    --fire-light: #FAECE7;
+    --fire-dark: #993C1D;
+    --white: #ffffff;
+    --bg: #f8f7f4;
+    --bg2: #f1efe8;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #5f5e5a;
+    --success-bg: #eaf3de;
+    --success-text: #3b6d11;
+    --danger-bg: #fcebeb;
+    --danger-text: #a32d2d;
+    --warn-bg: #faeeda;
+    --warn-text: #854f0b;
+    --info-bg: #e6f1fb;
+    --info-text: #185fa5;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+  }
+
+  .app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem 1rem 5rem;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+  }
+  .logo {
+    width: 42px; height: 42px;
+    background: var(--fire);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo svg { width: 22px; height: 22px; fill: white; }
+  .header-text h1 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; }
+  .header-text p { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .badge { margin-left: auto; font-size: 11px; font-weight: 500; padding: 4px 10px; background: var(--fire-light); color: var(--fire-dark); border-radius: 20px; white-space: nowrap; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 1.25rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 4px;
+    border: 0.5px solid var(--border);
+  }
+  .tab {
+    flex: 1;
+    padding: 9px 4px;
+    font-size: 12px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active { background: var(--fire); color: white; }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fire); flex-shrink: 0; }
+
+  /* FORMS */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 500px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr 1fr !important; }
+  }
+
+  label { font-size: 11px; font-weight: 500; color: var(--text2); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+  input, select, textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--fire); background: white; }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  /* PHOTO ZONE */
+  .photo-zone {
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--bg);
+  }
+  .photo-zone:hover { border-color: var(--fire); background: var(--fire-light); }
+  .photo-zone p { font-size: 13px; color: var(--text2); margin-top: 6px; }
+  .photo-zone strong { font-size: 13px; color: var(--text); display: block; margin-top: 6px; }
+  .photo-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; margin-top: 12px; }
+  .thumb { width: 100%; aspect-ratio: 1; border-radius: 8px; object-fit: cover; border: 0.5px solid var(--border); display: block; }
+  .thumb-wrap { position: relative; }
+  .thumb-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: rgba(0,0,0,0.65); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; color: white; border: none; line-height: 1; }
+
+  /* NCC CHIPS */
+  .ncc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { font-size: 11px; font-weight: 500; padding: 5px 10px; border-radius: 20px; background: var(--info-bg); color: var(--info-text); cursor: pointer; border: none; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .chip.selected { background: var(--fire); color: white; }
+
+  /* DEFECTS */
+  .defect-row { display: flex; gap: 8px; align-items: flex-start; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .defect-row:last-child { border-bottom: none; }
+  .defect-num { width: 26px; height: 26px; border-radius: 50%; background: var(--fire-light); color: var(--fire-dark); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .defect-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .defect-row-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .defect-del { padding: 8px; background: none; border: none; cursor: pointer; color: var(--text2); font-size: 18px; margin-top: 2px; line-height: 1; }
+
+  /* COMP STATUS */
+  .comp-status { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 8px; }
+  .comp-status.pass { background: var(--success-bg); color: var(--success-text); }
+  .comp-status.fail { background: var(--danger-bg); color: var(--danger-text); }
+  .comp-status.warn { background: var(--warn-bg); color: var(--warn-text); }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .stat { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* BUTTONS */
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; border: 0.5px solid var(--border2); background: white; color: var(--text); }
+  .btn:hover { background: var(--bg2); }
+  .btn-primary { background: var(--fire); color: white; border-color: var(--fire); }
+  .btn-primary:hover { background: var(--fire-dark); border-color: var(--fire-dark); }
+  .btn-sm { font-size: 12px; padding: 7px 14px; }
+  .flex-end { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+
+  /* PROGRESS */
+  .progress-bar { height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden; margin: 8px 0; }
+  .progress-fill { height: 100%; background: var(--fire); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* REPORT */
+  .report-preview h2 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); border-bottom: 0.5px solid var(--border); padding-bottom: 6px; margin: 1.5rem 0 0.5rem; }
+  .report-preview h3 { font-size: 13px; font-weight: 500; color: var(--text); margin: 1rem 0 4px; }
+  .report-preview p { color: var(--text2); font-size: 13px; margin-bottom: 8px; line-height: 1.7; }
+  .report-preview table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 1rem 0; }
+  .report-preview th { background: var(--bg2); padding: 8px 10px; text-align: left; border: 0.5px solid var(--border); font-weight: 500; color: var(--text); }
+  .report-preview td { padding: 8px 10px; border: 0.5px solid var(--border); color: var(--text2); vertical-align: top; }
+  .report-preview ul { padding-left: 1.25rem; margin-bottom: 8px; }
+  .report-preview li { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.35); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none !important; }
+  .mt1 { margin-top: 1rem; }
+  .mt05 { margin-top: 0.5rem; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* PRINT */
+  @media print {
+    .tabs, .btn, .header, .stats { display: none !important; }
+    .card { border: 1px solid #ccc; margin-bottom: 0.5rem; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8 7 6 10 6 14a6 6 0 0012 0c0-4-2-7-6-12zm0 16a4 4 0 01-4-4c0-2.5 1.5-4.5 4-8 2.5 3.5 4 5.5 4 8a4 4 0 01-4 4z"/></svg>
+    </div>
+    <div class="header-text">
+      <h1>FireStop AI</h1>
+      <p>AS/NCC Compliance Report Generator</p>
+    </div>
+    <span class="badge">AU Edition</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('inspect')">Inspection</button>
+    <button class="tab" onclick="switchTab('defects')">Defects</button>
+    <button class="tab" onclick="switchTab('generate')">Generate</button>
+    <button class="tab" onclick="switchTab('preview')">Preview</button>
+  </div>
+
+  <!-- INSPECTION TAB -->
+  <div id="tab-inspect" class="panel active">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Project details</div>
+      <div class="grid2 mt05">
+        <div><label>Project name</label><input id="proj-name" placeholder="e.g. Westfield Tower Level 12" /></div>
+        <div><label>Site address</label><input id="proj-addr" placeholder="123 Collins St, Melbourne VIC" /></div>
+        <div><label>Client / builder</label><input id="proj-client" placeholder="Builder or owner name" /></div>
+        <div><label>Inspector name</label><input id="insp-name" placeholder="Your full name" /></div>
+        <div><label>Inspection date</label><input id="insp-date" type="date" /></div>
+        <div><label>Report number</label><input id="rep-num" placeholder="FSI-2025-001" /></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Building classification</div>
+      <div class="grid3">
+        <div>
+          <label>NCC class</label>
+          <select id="ncc-class">
+            <option value="">Select class...</option>
+            <option>Class 2 – Residential (multi)</option>
+            <option>Class 3 – Residential (other)</option>
+            <option>Class 5 – Office</option>
+            <option>Class 6 – Shop / commercial</option>
+            <option>Class 7 – Carpark / storage</option>
+            <option>Class 8 – Industrial</option>
+            <option>Class 9a – Healthcare</option>
+            <option>Class 9b – Assembly</option>
+            <option>Class 10 – Non-habitable</option>
+          </select>
+        </div>
+        <div>
+          <label>Construction type</label>
+          <select id="const-type">
+            <option value="">Select type...</option>
+            <option>Type A – Fire resisting</option>
+            <option>Type B – Non-combustible</option>
+            <option>Type C – Any material</option>
+          </select>
+        </div>
+        <div>
+          <label>Floor / level</label>
+          <input id="floor-level" placeholder="e.g. Level 3, Basement 1" />
+        </div>
+      </div>
+      <div class="mt1">
+        <label>Applicable NCC / AS references (tap to select)</label>
+        <div class="ncc-chips" id="ncc-chips"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Site photos</div>
+      <div class="photo-zone" id="photo-zone" onclick="document.getElementById('photo-input').click()">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <strong>Tap to upload photos</strong>
+        <p>JPG, PNG — penetrations, defects, site photos</p>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" multiple class="hidden" onchange="handlePhotos(this)" />
+      <div class="photo-thumbs" id="photo-thumbs"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Inspector notes</div>
+      <textarea id="insp-notes" placeholder="Describe observed conditions, penetrations, materials used, outstanding items, access issues..."></textarea>
+    </div>
+
+    <div class="flex-end">
+      <button class="btn btn-primary" onclick="switchTab('defects')">Next: Log defects →</button>
+    </div>
+  </div>
+
+  <!-- DEFECTS TAB -->
+  <div id="tab-defects" class="panel">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Defect log</div>
+      <div id="defect-list"></div>
+      <button class="btn btn-sm mt1" onclick="addDefect()">+ Add defect</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Compliance snapshot</div>
+      <div id="comp-snapshot">
+        <p style="font-size:13px;color:var(--text2);">Add defects above to see compliance status.</p>
+      </div>
+    </div>
+
+    <div class="flex-end">
+      <button class="btn" onclick="switchTab('inspect')">← Back</button>
+      <button class="btn btn-primary" onclick="switchTab('generate')">Next: Generate →</button>
+    </div>
+  </div>
+
+  <!-- GENERATE TAB -->
+  <div id="tab-generate" class="panel">
+    <div class="stats" id="summary-stats">
+      <div class="stat"><div class="stat-num" id="s-defects">0</div><div class="stat-lbl">Defects</div></div>
+      <div class="stat"><div class="stat-num" id="s-high">0</div><div class="stat-lbl">Critical</div></div>
+      <div class="stat"><div class="stat-num" id="s-photos">0</div><div class="stat-lbl">Photos</div></div>
+      <div class="stat"><div class="stat-num" id="s-refs">0</div><div class="stat-lbl">NCC refs</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Report options</div>
+      <div class="grid2">
+        <div>
+          <label>Report type</label>
+          <select id="rep-type">
+            <option>Initial inspection report</option>
+            <option>Defect rectification report</option>
+            <option>Final compliance certificate</option>
+            <option>Progress inspection report</option>
+          </select>
+        </div>
+        <div>
+          <label>Output tone</label>
+          <select id="rep-tone">
+            <option>Formal / technical</option>
+            <option>Standard field report</option>
+            <option>Client-friendly summary</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt1">
+        <label>Additional AI instructions (optional)</label>
+        <textarea id="ai-instructions" placeholder="e.g. Focus on AS 1530.4 references. Include rectification timeline. Add risk matrix." style="min-height:60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>AI engine</div>
+      <div style="margin-bottom:10px;">
+        <label>Anthropic API key (required for AI generation)</label>
+        <input type="password" id="api-key" placeholder="sk-ant-api03-..." autocomplete="off" />
+        <p style="font-size:11px;color:var(--text2);margin-top:5px;">Get a free key at console.anthropic.com — key stays on your device only.</p>
+      </div>
+    </div>
+
+    <div class="flex-end">
+      <button class="btn btn-primary" id="gen-btn" onclick="generateReport()">Generate AI report</button>
+    </div>
+
+    <div id="gen-progress" class="hidden mt1">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;" id="gen-status">Analysing inspection data...</div>
+      <div class="progress-bar"><div class="progress-fill" id="gen-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- PREVIEW TAB -->
+  <div id="tab-preview" class="panel">
+    <div id="preview-empty" class="card" style="text-align:center;padding:3rem 1.5rem;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      <p style="color:var(--text2);font-size:14px;">Generate a report first to preview it here.</p>
+      <button class="btn btn-sm mt1" onclick="switchTab('generate')">Go to Generate</button>
+    </div>
+
+    <div id="preview-content" class="hidden">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+          <div class="card-title" style="margin-bottom:0;"><span class="dot"></span>Generated report</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="copyReport()">Copy text</button>
+            <button class="btn btn-sm" onclick="window.print()">Print / Save PDF</button>
+          </div>
+        </div>
+        <div class="report-preview" id="report-body"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const NCC_REFS = ['NCC C3.10','NCC C3.11','NCC C3.12','AS 1530.4','AS 4072.1','AS 1530.1','AS/NZS 4600','BCA Spec C1.1','FRL 90/90/90','FRL 60/60/60','AS 4254.1','ABCB FS-08'];
+
+let photos = [];
+let defects = [];
+let selectedRefs = new Set();
+
+function init() {
+  document.getElementById('insp-date').value = new Date().toISOString().slice(0,10);
+
+  // Load saved API key
+  const saved = localStorage.getItem('fs_api_key');
+  if (saved) document.getElementById('api-key').value = saved;
+
+  const chips = document.getElementById('ncc-chips');
+  NCC_REFS.forEach(r => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = r;
+    b.onclick = () => {
+      b.classList.toggle('selected');
+      b.classList.contains('selected') ? selectedRefs.add(r) : selectedRefs.delete(r);
+    };
+    chips.appendChild(b);
+  });
+
+  addDefect();
+  updateStats();
+}
+
+function switchTab(t) {
+  const keys = ['inspect','defects','generate','preview'];
+  document.querySelectorAll('.tab').forEach((b,i) => b.classList.toggle('active', keys[i] === t));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'tab-'+t));
+  if (t === 'generate') updateStats();
+  if (t === 'defects') updateCompSnapshot();
+}
+
+function handlePhotos(inp) {
+  Array.from(inp.files).forEach(f => {
+    const r = new FileReader();
+    r.onload = e => { photos.push({ url: e.target.result, name: f.name }); renderThumbs(); };
+    r.readAsDataURL(f);
+  });
+}
+
+function renderThumbs() {
+  const c = document.getElementById('photo-thumbs');
+  c.innerHTML = photos.map((p,i) => `
+    <div class="thumb-wrap">
+      <img src="${p.url}" class="thumb" alt="Photo ${i+1}" />
+      <button class="thumb-del" onclick="removePhoto(${i})">×</button>
+    </div>`).join('');
+}
+
+function removePhoto(i) { photos.splice(i,1); renderThumbs(); }
+
+function addDefect() {
+  defects.push({ id: Date.now(), desc: '', location: '', severity: 'high' });
+  renderDefects();
+}
+
+function renderDefects() {
+  const c = document.getElementById('defect-list');
+  if (!defects.length) { c.innerHTML = '<p style="font-size:13px;color:var(--text2);">No defects logged.</p>'; return; }
+  c.innerHTML = defects.map((d,i) => `
+    <div class="defect-row">
+      <div class="defect-num">${i+1}</div>
+      <div class="defect-fields">
+        <div><label>Description</label>
+          <input placeholder="e.g. Unsealed cable penetration through FRL wall" value="${d.desc.replace(/"/g,'&quot;')}"
+            oninput="defects[${i}].desc=this.value" /></div>
+        <div class="defect-row-inner">
+          <div><label>Location</label>
+            <input placeholder="e.g. Level 3, Grid C4" value="${d.location.replace(/"/g,'&quot;')}"
+              oninput="defects[${i}].location=this.value" /></div>
+          <div><label>Severity</label>
+            <select onchange="defects[${i}].severity=this.value">
+              <option value="high" ${d.severity==='high'?'selected':''}>High — Critical</option>
+              <option value="medium" ${d.severity==='medium'?'selected':''}>Medium</option>
+              <option value="low" ${d.severity==='low'?'selected':''}>Low</option>
+            </select></div>
+        </div>
+      </div>
+      <button class="defect-del" onclick="removeDefect(${i})">×</button>
+    </div>`).join('');
+}
+
+function removeDefect(i) { defects.splice(i,1); renderDefects(); }
+
+function updateCompSnapshot() {
+  const snap = document.getElementById('comp-snapshot');
+  const filled = defects.filter(d => d.desc);
+  if (!filled.length) { snap.innerHTML = '<p style="font-size:13px;color:var(--text2);">No defects logged yet.</p>'; return; }
+  const high = filled.filter(d=>d.severity==='high').length;
+  const med = filled.filter(d=>d.severity==='medium').length;
+  const low = filled.filter(d=>d.severity==='low').length;
+  snap.innerHTML = `
+    ${high ? `<div class="comp-status fail">✕ &nbsp;${high} critical non-conformance${high>1?'s':''} — immediate rectification required</div>` : ''}
+    ${med ? `<div class="comp-status warn">! &nbsp;${med} medium-severity item${med>1?'s':''} — schedule rectification</div>` : ''}
+    ${low ? `<div class="comp-status pass">✓ &nbsp;${low} minor item${low>1?'s':''} — monitor and record</div>` : ''}
+    ${!high && !med ? '<div class="comp-status pass">✓ &nbsp;No critical non-conformances identified</div>' : ''}`;
+}
+
+function updateStats() {
+  const filled = defects.filter(d=>d.desc);
+  document.getElementById('s-defects').textContent = filled.length;
+  document.getElementById('s-high').textContent = filled.filter(d=>d.severity==='high').length;
+  document.getElementById('s-photos').textContent = photos.length;
+  document.getElementById('s-refs').textContent = selectedRefs.size;
+}
+
+async function generateReport() {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) { alert('Please enter your Anthropic API key in the Generate tab.'); return; }
+  localStorage.setItem('fs_api_key', apiKey);
+
+  const btn = document.getElementById('gen-btn');
+  const prog = document.getElementById('gen-progress');
+  const bar = document.getElementById('gen-bar');
+  const status = document.getElementById('gen-status');
+
+  const projName = document.getElementById('proj-name').value || 'Unnamed Project';
+  const projAddr = document.getElementById('proj-addr').value || 'Not specified';
+  const client = document.getElementById('proj-client').value || 'Not specified';
+  const inspector = document.getElementById('insp-name').value || 'Not specified';
+  const date = document.getElementById('insp-date').value || new Date().toISOString().slice(0,10);
+  const repNum = document.getElementById('rep-num').value || 'N/A';
+  const nccClass = document.getElementById('ncc-class').value || 'Not specified';
+  const constType = document.getElementById('const-type').value || 'Not specified';
+  const floor = document.getElementById('floor-level').value || 'Not specified';
+  const notes = document.getElementById('insp-notes').value || '';
+  const repType = document.getElementById('rep-type').value;
+  const repTone = document.getElementById('rep-tone').value;
+  const aiInstr = document.getElementById('ai-instructions').value || '';
+  const refs = Array.from(selectedRefs).join(', ') || 'NCC C3.10, AS 1530.4, AS 4072.1';
+
+  const filled = defects.filter(d=>d.desc);
+  const defectText = filled.map((d,i) =>
+    `${i+1}. [${d.severity.toUpperCase()}] ${d.desc} — Location: ${d.location || 'unspecified'}`
+  ).join('\n') || 'No defects logged.';
+
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  btn.disabled = true;
+  prog.classList.remove('hidden');
+
+  const steps = [[10,'Analysing inspection data...'],[30,'Mapping NCC references...'],[55,'Drafting defect schedule...'],[75,'Compiling compliance findings...'],[92,'Formatting report...']];
+  let si = 0;
+  const ticker = setInterval(() => {
+    if (si < steps.length) { bar.style.width = steps[si][0]+'%'; status.textContent = steps[si][1]; si++; }
+  }, 700);
+
+  const prompt = `You are a licensed fire safety engineer and Australian building code specialist. Generate a professional fire stopping inspection report.
+
+PROJECT:
+- Name: ${projName}
+- Address: ${projAddr}
+- Client/Builder: ${client}
+- Inspector: ${inspector}
+- Date: ${date}
+- Report No: ${repNum}
+- NCC Class: ${nccClass}
+- Construction Type: ${constType}
+- Area: ${floor}
+
+REPORT TYPE: ${repType}
+TONE: ${repTone}
+
+DEFECTS (${filled.length} items):
+${defectText}
+
+INSPECTOR NOTES:
+${notes || 'None provided.'}
+
+APPLICABLE STANDARDS: ${refs}
+
+EXTRA INSTRUCTIONS: ${aiInstr}
+
+Write the full report in HTML using ONLY these tags: h2, h3, p, ul, li, strong, em, table, tr, td, th.
+
+Sections required:
+1. Executive Summary
+2. Scope of Inspection
+3. Applicable Standards & NCC References
+4. Findings & Observations
+5. Defect Schedule (table: Item | Location | Severity | Description | NCC Reference | Remediation Required)
+6. Compliance Assessment
+7. Recommendations & Rectification Priority
+8. Certification Statement
+
+For each defect cite specific NCC clause numbers (e.g. C3.10, C3.11) or Australian Standard clause (e.g. AS 4072.1 Clause 4.3).
+Mark high severity as CRITICAL NON-CONFORMANCE.
+Use Australian building terminology throughout.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    clearInterval(ticker);
+    bar.style.width = '100%';
+    status.textContent = 'Report ready!';
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'API error');
+    }
+
+    const data = await res.json();
+    const html = data.content?.map(c => c.text || '').join('') || 'No content returned.';
+    renderReport(html, projName, inspector, date, repNum);
+    switchTab('preview');
+  } catch(e) {
+    clearInterval(ticker);
+    status.textContent = 'Error: ' + e.message;
+    renderReport(`<p style="color:red;">Error generating report: ${e.message}</p><p>Please check your API key and try again.</p>`, projName, inspector, date, repNum);
+    switchTab('preview');
+  }
+
+  btn.innerHTML = 'Generate AI report';
+  btn.disabled = false;
+  setTimeout(() => { prog.classList.add('hidden'); bar.style.width = '0%'; }, 3000);
+}
+
+function renderReport(html, proj, inspector, date, repNum) {
+  document.getElementById('preview-empty').classList.add('hidden');
+  document.getElementById('preview-content').classList.remove('hidden');
+
+  const header = `
+    <div style="border-bottom:2px solid #D85A30;padding-bottom:1rem;margin-bottom:1.5rem;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#1a1a18;">${proj || 'Fire Stopping Inspection Report'}</div>
+          <div style="font-size:12px;color:#5f5e5a;margin-top:4px;">Inspector: ${inspector} &nbsp;|&nbsp; Date: ${date} &nbsp;|&nbsp; Ref: ${repNum}</div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:#993C1D;font-weight:600;">FIRE STOPPING INSPECTION<br><span style="color:#5f5e5a;font-weight:400;">AS/NCC Compliance Report</span></div>
+      </div>
+    </div>`;
+
+  document.getElementById('report-body').innerHTML = header + html;
+}
+
+function copyReport() {
+  const text = document.getElementById('report-body').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const b = event.target;
+    b.textContent = 'Copied!';
+    setTimeout(() => b.textContent = 'Copy text', 1800);
+  }).catch(() => alert('Copy failed — please select text manually.'));
+}
+
+init();
+</script>
+</body>
+</html>
